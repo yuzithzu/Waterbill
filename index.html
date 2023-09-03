@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Water Bill Calculator</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            font-family: monospace;
+            text-align: center;
+        }
+        h1 {
+            color: green;
+        }
+        #calculator {
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #333;
+            border-radius: 10px;
+            width: 300px;
+        }
+        label {
+            display: block;
+            text-align: left;
+            font-size: 14px;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 5px;
+            margin-bottom: 10px;
+            border: none;
+            background-color: #555;
+            color: white;
+            text-align: center;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        #result {
+            background-color: #444;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+        button {
+            background-color: green;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+        #summary {
+            margin-top: 20px;
+            text-align: left;
+        }
+        table {
+            width: 100%;
+        }
+        th, td {
+            padding: 5px;
+            border: 1px solid #555;
+        }
+        .delete-button {
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        #clock {
+            font-size: 20px;
+            background-color: #333;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Water Bill Calculator</h1>
+    <input type="date" id="date">
+    <div id="calculator">
+        <label for="totalAmount">Total Amount:</label>
+        <input type="number" id="totalAmount" placeholder="Total Amount">
+        <label for="totalCubicMeter">Divided by Total Cubic:</label>
+        <input type="number" id="totalCubicMeter" placeholder="Total Cubic">
+        <label for="pricePerCubicMeter">Multiply by Price Cubic:</label>
+        <input type="number" id="pricePerCubicMeter" placeholder="Price Cubic">
+        <button onclick="calculateBill()">Calculate</button>
+        <label for="totalBill">Result:</label>
+        <input type="text" id="totalBill" disabled>
+    </div>
+
+    <div id="summary">
+        <h2>Summary</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Total Amount</th>
+                    <th>Total Cubic</th>
+                    <th>Price Cubic</th>
+                    <th>Result</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+            <tbody id="summaryTableBody">
+                <!-- Summary table rows will be added here -->
+            </tbody>
+        </table>
+    </div>
+
+    <div id="clock">
+        <span id="clockDisplay"></span>
+    </div>
+
+    <script>
+        // Function to update the clock
+        function updateClock() {
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+            document.getElementById('clockDisplay').textContent = `${hours}:${minutes}:${seconds}`;
+        }
+
+        // Update the clock every second
+        setInterval(updateClock, 1000);
+        updateClock(); // Initial call to set the clock immediately
+
+        // Function to calculate the bill and update the summary table
+        function calculateBill() {
+            const date = document.getElementById('date').value;
+            const totalAmount = parseFloat(document.getElementById('totalAmount').value);
+            const totalCubicMeter = parseFloat(document.getElementById('totalCubicMeter').value);
+            const pricePerCubicMeter = parseFloat(document.getElementById('pricePerCubicMeter').value);
+
+            if (!isNaN(totalAmount) && !isNaN(totalCubicMeter) && !isNaN(pricePerCubicMeter)) {
+                const result = (totalAmount / totalCubicMeter) * pricePerCubicMeter;
+                document.getElementById('totalBill').value = result.toFixed(2);
+
+                // Update the summary table
+                const summaryTableBody = document.getElementById('summaryTableBody');
+                const newRow = summaryTableBody.insertRow(0);
+                newRow.innerHTML = `<td>${date}</td><td>${totalAmount}</td><td>${totalCubicMeter}</td><td>${pricePerCubicMeter}</td><td>${result.toFixed(2)}</td><td><button class="delete-button" onclick="deleteRow(this)">Delete</button></td>`;
+                
+                // Store the data in local storage
+                const summaryData = JSON.parse(localStorage.getItem('summaryData')) || [];
+                summaryData.unshift({
+                    date,
+                    totalAmount,
+                    totalCubicMeter,
+                    pricePerCubicMeter,
+                    result: result.toFixed(2)
+                });
+                localStorage.setItem('summaryData', JSON.stringify(summaryData));
+            } else {
+                document.getElementById('totalBill').value = 'Please enter valid numbers.';
+            }
+        }
+
+        // Function to delete a row from the summary table
+        function deleteRow(button) {
+            const row = button.parentNode.parentNode;
+            const date = row.cells[0].textContent;
+            const summaryData = JSON.parse(localStorage.getItem('summaryData')) || [];
+
+            // Remove the corresponding entry from the stored data
+            const updatedSummaryData = summaryData.filter(data => data.date !== date);
+            localStorage.setItem('summaryData', JSON.stringify(updatedSummaryData));
+
+            // Remove the row from the table
+            row.parentNode.removeChild(row);
+        }
+
+        // Load and display previously stored summary data
+        window.addEventListener('load', function() {
+            const summaryData = JSON.parse(localStorage.getItem('summaryData')) || [];
+            const summaryTableBody = document.getElementById('summaryTableBody');
+            summaryData.forEach(data => {
+                const newRow = summaryTableBody.insertRow(0);
+                newRow.innerHTML = `<td>${data.date}</td><td>${data.totalAmount}</td><td>${data.totalCubicMeter}</td><td>${data.pricePerCubicMeter}</td><td>${data.result}</td><td><button class="delete-button" onclick="deleteRow(this)">Delete</button></td>`;
+            });
+        });
+    </script>
+</body>
+</html>
