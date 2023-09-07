@@ -49,20 +49,25 @@
             cursor: pointer;
         }
         #summary {
-            display:flex;
+            display: flex;
             flex-direction: column;
-            align-items:center;
+            align-items: center;
             width: 80%;
         }
-        table {
-            border-collapse: collapse;
-            width: 100%;
+        .table-container {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #555;
+            border-radius: 5px;
             margin-bottom: 20px;
         }
+        table.small-table {
+            width: 50%;
+            margin: 0 auto;
+        }
         th, td {
-            border: 1px solid #555;
-            padding: 8px;
-            text-align: center;
+            padding: 4px;
+            font-size: 12px;
         }
         th {
             background-color: #333;
@@ -75,6 +80,9 @@
             padding: 5px 10px;
             cursor: pointer;
         }
+        .delete-cell {
+            text-align: center;
+        }
         #clock {
             font-size: 20px;
             background-color: #333;
@@ -82,69 +90,9 @@
             border-radius: 5px;
             margin-top: 20px;
         }
-
         /* Added a CSS class for white text color */
         .white-text {
             color: white;
-        }
-        
-        /* Added a CSS class for center-aligned delete buttons */
-        .delete-cell {
-            text-align: center;
-        }
-        
-        /* Set specific widths for table columns */
-        #initialTable th:nth-child(1),
-        #initialTable td:nth-child(1),
-        #separateTable th:nth-child(1),
-        #separateTable td:nth-child(1) {
-            width: 2%;
-        }
-        #initialTable th:nth-child(2),
-        #initialTable td:nth-child(2) {
-            width: 5%;
-        }
-        #initialTable th:nth-child(3),
-        #initialTable td:nth-child(3),
-        #separateTable th:nth-child(2),
-        #separateTable td:nth-child(2) {
-            width: 5%;
-        }
-        #initialTable th:nth-child(4),
-        #initialTable td:nth-child(4),
-        #separateTable th:nth-child(3),
-        #separateTable td:nth-child(3),
-        #separateTable th:nth-child(4),
-        #separateTable td:nth-child(4) {
-            width: 5%;
-        }
-        #initialTable th:nth-child(5),
-        #initialTable td:nth-child(5),
-        #separateTable th:nth-child(5),
-        #separateTable td:nth-child(5) {
-            width: 5%;
-        }
-        #initialTable th:nth-child(6),
-        #initialTable td:nth-child(6),
-        #separateTable th:nth-child(6),
-        #separateTable td:nth-child(6) {
-            width: 5%;
-        }
-
-        /* CSS for table containers */
-        .table-container {
-            max-height: 150px; /* Set the desired maximum height for the table */
-            overflow-y: scroll;
-            border: 1px solid #555; /* Add a border for the frame */
-            border-radius: 5px;
-            margin-bottom: 5px;
-        }
-           /* Paliitin ang mga th at td sa mga table */
-           #initialTable th, #initialTable td,
-           #separateTable th, #separateTable td {
-           padding: 4px; /* I-adjust ang padding base sa iyong nais */
-           font-size: 12px; /* I-adjust ang font size base sa iyong nais */
-           width: auto; /* I-adjust ang width base sa iyong nais */
         }
     </style>
 </head>
@@ -174,9 +122,10 @@
     
     <div id="summary">
         <h2>Summary</h2>
+
         <!-- Initial Table Container -->
         <div class="table-container">
-            <table id="initialTable">
+            <table id="initialTable" class="small-table">
                 <thead>
                     <tr>
                         <th>Date</th>
@@ -192,10 +141,10 @@
                 </tbody>
             </table>
         </div>
-        
+
         <!-- Separate Table Container -->
         <div class="table-container">
-            <table id="separateTable">
+            <table id="separateTable" class="small-table">
                 <thead>
                     <tr>
                         <th>Date</th>
