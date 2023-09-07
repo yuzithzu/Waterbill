@@ -17,12 +17,13 @@
         h1 {
             color: green;
         }
-        #calculator {
+        .calculator {
             margin: 20px auto;
             padding: 20px;
             background-color: #333;
             border-radius: 10px;
             width: 300px;
+            display: inline-block;
         }
         label {
             display: block;
@@ -40,12 +41,6 @@
             font-family: monospace;
             font-size: 14px;
         }
-        #result {
-            background-color: #444;
-            padding: 10px;
-            margin-top: 10px;
-            border-radius: 5px;
-        }
         button {
             background-color: green;
             color: white;
@@ -55,17 +50,23 @@
         }
         #summary {
             display:flex;
-            flex-direction:column;
+            flex-direction: column;
             align-items:center;
-            width: 50%;
+            width: 80%;
         }
         table {
-            width: 30%;
-            font-size: 14px;
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 20px;
         }
         th, td {
-            padding: 5px;
             border: 1px solid #555;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #333;
+            color: white;
         }
         .delete-button {
             background-color: red;
@@ -81,39 +82,72 @@
             border-radius: 5px;
             margin-top: 20px;
         }
+
+        /* Added a CSS class for white text color */
+        .white-text {
+            color: white;
+        }
+        
+        /* Added a CSS class for center-aligned delete buttons */
+        .delete-cell {
+            text-align: center;
+        }
     </style>
 </head>
 <body>
     <h1>Water Bill Calculator</h1>
     <label for="date">Select Date:</label>
     <input type="date" id="date">
-    <div id="calculator">
+    <div class="calculator" id="initialCalculator">
         <label for="totalAmount">Total Amount:</label>
         <input type="number" id="totalAmount" placeholder="Total Amount">
         <label for="totalCubicMeter">Divided by Total Cubic:</label>
         <input type="number" id="totalCubicMeter" placeholder="Total Cubic">
         <label for="pricePerCubicMeter">Multiply by Price Cubic:</label>
         <input type="number" id="pricePerCubicMeter" placeholder="Price Cubic">
-        <button onclick="calculateBill()">Calculate</button>
-        <label for="totalBill">Result:</label>
+        <button onclick="calculateInitialBill()">Calculate Initial</button>
+        <label for="totalBill">Result (Initial):</label>
         <input type="text" id="totalBill" disabled>
+    </div>
+
+    <div class="calculator" id="separateCalculator">
+        <label for="previousReading">Previous Reading:</label>
+        <input type="number" id="previousReading" placeholder="Previous Reading">
+        <label for="presentReading">Present Reading:</label>
+        <input type="number" id="presentReading" placeholder="Present Reading">
+        <button onclick="calculateSeparateBill()">Calculate Separate</button>
     </div>
 
     <div id="summary">
         <h2>Summary</h2>
-        <table>
+        <table id="initialTable">
             <thead>
                 <tr>
                     <th>Date</th>
-                    <th>Total Amount</th>
-                    <th>Total Cubic</th>
-                    <th>Price Cubic</th>
-                    <th>Result</th>
-                    <th>Delete</th>
+                    <th>Total Amount (Initial)</th>
+                    <th>Total Cubic (Initial)</th>
+                    <th>Price Cubic (Initial)</th>
+                    <th class="white-text">Result (Initial)</th>
+                    <th class="delete-cell">Delete</th> <!-- Added class for alignment -->
                 </tr>
             </thead>
-            <tbody id="summaryTableBody">
-                <!-- Summary table rows will be added here -->
+            <tbody id="initialTableBody">
+                <!-- Initial calculation table rows will be added here -->
+            </tbody>
+        </table>
+
+        <table id="separateTable">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Previous Reading</th>
+                    <th>Present Reading</th>
+                    <th>Consumption</th>
+                    <th class="delete-cell">Delete</th> <!-- Added class for alignment -->
+                </tr>
+            </thead>
+            <tbody id="separateTableBody">
+                <!-- Separate calculation table rows will be added here -->
             </tbody>
         </table>
     </div>
@@ -136,8 +170,8 @@
         setInterval(updateClock, 1000);
         updateClock(); // Initial call to set the clock immediately
 
-        // Function to calculate the bill and update the summary table
-        function calculateBill() {
+        // Function to calculate the initial bill and update the summary table
+        function calculateInitialBill() {
             const date = document.getElementById('date').value;
             const totalAmount = parseFloat(document.getElementById('totalAmount').value);
             const totalCubicMeter = parseFloat(document.getElementById('totalCubicMeter').value);
@@ -147,23 +181,51 @@
                 const result = (totalAmount / totalCubicMeter) * pricePerCubicMeter;
                 document.getElementById('totalBill').value = result.toFixed(2);
 
-                // Update the summary table
-                const summaryTableBody = document.getElementById('summaryTableBody');
-                const newRow = summaryTableBody.insertRow(0);
-                newRow.innerHTML = `<td>${date}</td><td>${totalAmount}</td><td>${totalCubicMeter}</td><td>${pricePerCubicMeter}</td><td>${result.toFixed(2)}</td><td><button class="delete-button" onclick="deleteRow(this)">Delete</button></td>`;
-                
+                // Update the summary table for the initial calculation
+                const initialTableBody = document.getElementById('initialTableBody');
+                const newRow = initialTableBody.insertRow(0);
+                newRow.innerHTML = `<td>${date}</td><td>${totalAmount}</td><td>${totalCubicMeter}</td><td>${pricePerCubicMeter}</td><td class="white-text">${result.toFixed(2)}</td><td class="delete-cell"><button class="delete-button" onclick="deleteRow(this)">Delete</button></td>`;
+
                 // Store the data in local storage
-                const summaryData = JSON.parse(localStorage.getItem('summaryData')) || [];
-                summaryData.unshift({
+                const initialData = JSON.parse(localStorage.getItem('initialData')) || [];
+                initialData.unshift({
                     date,
                     totalAmount,
                     totalCubicMeter,
                     pricePerCubicMeter,
                     result: result.toFixed(2)
                 });
-                localStorage.setItem('summaryData', JSON.stringify(summaryData));
+                localStorage.setItem('initialData', JSON.stringify(initialData));
             } else {
                 document.getElementById('totalBill').value = 'Please enter valid numbers.';
+            }
+        }
+
+        // Function to calculate the separate bill and update the summary table
+        function calculateSeparateBill() {
+            const date = document.getElementById('date').value;
+            const previousReading = parseFloat(document.getElementById('previousReading').value);
+            const presentReading = parseFloat(document.getElementById('presentReading').value);
+
+            if (!isNaN(previousReading) && !isNaN(presentReading)) {
+                const consumption = presentReading - previousReading;
+
+                // Update the summary table for the separate calculation
+                const separateTableBody = document.getElementById('separateTableBody');
+                const newRow = separateTableBody.insertRow(0);
+                newRow.innerHTML = `<td>${date}</td><td>${previousReading}</td><td>${presentReading}</td><td>${consumption}</td><td class="delete-cell"><button class="delete-button" onclick="deleteRow(this)">Delete</button></td>`;
+
+                // Store the data in local storage
+                const separateData = JSON.parse(localStorage.getItem('separateData')) || [];
+                separateData.unshift({
+                    date,
+                    previousReading,
+                    presentReading,
+                    consumption,
+                });
+                localStorage.setItem('separateData', JSON.stringify(separateData));
+            } else {
+                document.getElementById('separateTotalBill').value = 'Please enter valid numbers.';
             }
         }
 
@@ -171,23 +233,39 @@
         function deleteRow(button) {
             const row = button.parentNode.parentNode;
             const date = row.cells[0].textContent;
-            const summaryData = JSON.parse(localStorage.getItem('summaryData')) || [];
 
-            // Remove the corresponding entry from the stored data
-            const updatedSummaryData = summaryData.filter(data => data.date !== date);
-            localStorage.setItem('summaryData', JSON.stringify(updatedSummaryData));
+            // Check which table the row belongs to and remove it accordingly
+            if (row.parentNode.id === 'initialTableBody') {
+                const initialData = JSON.parse(localStorage.getItem('initialData')) || [];
+                const updatedInitialData = initialData.filter(data => data.date !== date);
+                localStorage.setItem('initialData', JSON.stringify(updatedInitialData));
+            } else if (row.parentNode.id === 'separateTableBody') {
+                const separateData = JSON.parse(localStorage.getItem('separateData')) || [];
+                const updatedSeparateData = separateData.filter(data => data.date !== date);
+                localStorage.setItem('separateData', JSON.stringify(updatedSeparateData));
+            }
 
             // Remove the row from the table
             row.parentNode.removeChild(row);
         }
 
-        // Load and display previously stored summary data
+        // Load and display previously stored summary data for the initial calculation
         window.addEventListener('load', function() {
-            const summaryData = JSON.parse(localStorage.getItem('summaryData')) || [];
-            const summaryTableBody = document.getElementById('summaryTableBody');
-            summaryData.forEach(data => {
-                const newRow = summaryTableBody.insertRow(0);
-                newRow.innerHTML = `<td>${data.date}</td><td>${data.totalAmount}</td><td>${data.totalCubicMeter}</td><td>${data.pricePerCubicMeter}</td><td>${data.result}</td><td><button class="delete-button" onclick="deleteRow(this)">Delete</button></td>`;
+            const initialData = JSON.parse(localStorage.getItem('initialData')) || [];
+            const initialTableBody = document.getElementById('initialTableBody');
+            initialData.forEach(data => {
+                const newRow = initialTableBody.insertRow(0);
+                newRow.innerHTML = `<td>${data.date}</td><td>${data.totalAmount}</td><td>${data.totalCubicMeter}</td><td>${data.pricePerCubicMeter}</td><td class="white-text">${data.result}</td><td class="delete-cell"><button class="delete-button" onclick="deleteRow(this)">Delete</button></td>`;
+            });
+        });
+
+        // Load and display previously stored summary data for the separate calculation
+        window.addEventListener('load', function() {
+            const separateData = JSON.parse(localStorage.getItem('separateData')) || [];
+            const separateTableBody = document.getElementById('separateTableBody');
+            separateData.forEach(data => {
+                const newRow = separateTableBody.insertRow(0);
+                newRow.innerHTML = `<td>${data.date}</td><td>${data.previousReading}</td><td>${data.presentReading}</td><td>${data.consumption}</td><td class="delete-cell"><button class="delete-button" onclick="deleteRow(this)">Delete</button></td>`;
             });
         });
     </script>
