@@ -93,7 +93,7 @@
             text-align: center;
         }
         
-               /* Set specific widths for table columns */
+        /* Set specific widths for table columns */
         #initialTable th:nth-child(1),
         #initialTable td:nth-child(1),
         #separateTable th:nth-child(1),
@@ -130,6 +130,22 @@
         #separateTable td:nth-child(6) {
             width: 5%;
         }
+
+        /* CSS for table containers */
+        .table-container {
+            max-height: 150px; /* Set the desired maximum height for the table */
+            overflow-y: scroll;
+            border: 1px solid #555; /* Add a border for the frame */
+            border-radius: 5px;
+            margin-bottom: 5px;
+        }
+           /* Paliitin ang mga th at td sa mga table */
+           #initialTable th, #initialTable td,
+           #separateTable th, #separateTable td {
+           padding: 4px; /* I-adjust ang padding base sa iyong nais */
+           font-size: 12px; /* I-adjust ang font size base sa iyong nais */
+           width: auto; /* I-adjust ang width base sa iyong nais */
+        }
     </style>
 </head>
 <body>
@@ -158,36 +174,42 @@
     
     <div id="summary">
         <h2>Summary</h2>
-        <table id="initialTable">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Total Amount (Initial)</th>
-                    <th>Total Cubic (Initial)</th>
-                    <th>Price Cubic (Initial)</th>
-                    <th class="white-text">Result (Initial)</th>
-                    <th class="delete-cell">Delete</th> <!-- Added class for alignment -->
-                </tr>
-            </thead>
-            <tbody id="initialTableBody">
-                <!-- Initial calculation table rows will be added here -->
-            </tbody>
-        </table>
-
-        <table id="separateTable">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Previous Reading</th>
-                    <th>Present Reading</th>
-                    <th>Consumption</th>
-                    <th class="delete-cell">Delete</th> <!-- Added class for alignment -->
-                </tr>
-            </thead>
-            <tbody id="separateTableBody">
-                <!-- Separate calculation table rows will be added here -->
-            </tbody>
-        </table>
+        <!-- Initial Table Container -->
+        <div class="table-container">
+            <table id="initialTable">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Total Amount (Initial)</th>
+                        <th>Total Cubic (Initial)</th>
+                        <th>Price Cubic (Initial)</th>
+                        <th class="white-text">Result (Initial)</th>
+                        <th class="delete-cell">Delete</th>
+                    </tr>
+                </thead>
+                <tbody id="initialTableBody">
+                    <!-- Initial calculation table rows will be added here -->
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Separate Table Container -->
+        <div class="table-container">
+            <table id="separateTable">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Previous Reading</th>
+                        <th>Present Reading</th>
+                        <th>Consumption</th>
+                        <th class="delete-cell">Delete</th>
+                    </tr>
+                </thead>
+                <tbody id="separateTableBody">
+                    <!-- Separate calculation table rows will be added here -->
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <div id="clock">
