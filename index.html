@@ -95,6 +95,13 @@
         .white-text {
             color: white;
         }
+        /* Added CSS for calculator buttons */
+        .calculator-buttons button {
+            width: 50px;
+            height: 50px;
+            font-size: 20px;
+            margin: 5px;
+        }
     </style>
 </head>
 <body>
@@ -164,6 +171,31 @@
 
     <div id="clock">
         <span id="clockDisplay"></span>
+    </div>
+
+    <!-- Basic Calculator -->
+    <div class="calculator" id="basicCalculator">
+        <label for="calcInput">Calculator:</label>
+        <input type="text" id="calcInput" value="" readonly>
+        <div class="calculator-buttons">
+            <button onclick="appendToCalc('1')">1</button>
+            <button onclick="appendToCalc('2')">2</button>
+            <button onclick="appendToCalc('3')">3</button>
+            <button onclick="appendToCalc('+')">+</button>
+            <button onclick="appendToCalc('4')">4</button>
+            <button onclick="appendToCalc('5')">5</button>
+            <button onclick="appendToCalc('6')">6</button>
+            <button onclick="appendToCalc('-')">-</button>
+            <button onclick="appendToCalc('7')">7</button>
+            <button onclick="appendToCalc('8')">8</button>
+            <button onclick="appendToCalc('9')">9</button>
+            <button onclick="appendToCalc('*')">*</button>
+            <button onclick="appendToCalc('0')">0</button>
+            <button onclick="appendToCalc('.')">.</button>
+            <button onclick="clearCalc()">C</button>
+            <button onclick="calculateExpression()">=</button>
+            <button onclick="appendToCalc('/')">/</button>
+        </div>
     </div>
 
     <script>
@@ -278,6 +310,30 @@
                 newRow.innerHTML = `<td>${data.date}</td><td>${data.previousReading}</td><td>${data.presentReading}</td><td>${data.consumption}</td><td class="delete-cell"><button class="delete-button" onclick="deleteRow(this)">Delete</button></td>`;
             });
         });
+
+        // Basic Calculator Functions
+        let calcExpression = "";
+
+        function appendToCalc(value) {
+            calcExpression += value;
+            document.getElementById('calcInput').value = calcExpression;
+        }
+
+        function clearCalc() {
+            calcExpression = "";
+            document.getElementById('calcInput').value = "";
+        }
+
+        function calculateExpression() {
+            try {
+                const sanitizedExpression = calcExpression.replace(/[^-()\d/*+.]/g, '');
+                const result = new Function('return ' + sanitizedExpression)();
+                document.getElementById('calcInput').value = result;
+                calcExpression = result.toString();
+            } catch (error) {
+                document.getElementById('calcInput').value = "Error";
+            }
+        }
     </script>
 </body>
 </html>
